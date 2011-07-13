@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<name>Kipeto Parent</name>
+	<groupId>de.ecclesia.kipeto</groupId>
+	<artifactId>kipeto-parent</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>kipeto-core</module>
+		<module>kipeto-tools</module>
+		<module>kipeto-ant</module>
+		<module>kipeto-common</module>
+		<module>kipeto-bootstrap</module>
+		<module>kipeto</module>
+	</modules>
+  
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+  
+	<organization>
+		<name>Ecclesia Versicherungsdienst GmbH</name>
+		<url>http://www.ecclesia-gruppe.de</url>
+	</organization>
+  
+	<developers>
+		<developer>
+			<id>dmaehl</id>
+			<name>Dominik Mähl</name>
+			<email>dmaehl@ecclesia-gruppe.de</email>
+		</developer>
+		<developer>
+			<id>dhintze</id>
+			<name>Daniel Hintze</name>
+			<email>dhintze@ecclesia-gruppe.de</email>
+		</developer>
+	</developers>
+  
+	<dependencies>
+	</dependencies>
+
+	<properties>
+		<project.inceptionYear>2010</project.inceptionYear>
+		<license.licenseName>apache_v2</license.licenseName>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+  
+</project>
+

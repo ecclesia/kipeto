@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!--
+  #%L
+  Kipeto Ant Tasks
+  %%
+  Copyright (C) 2010 - 2011 Ecclesia Versicherungsdienst GmbH
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+
+
+<project name="Kipeto Ant Task" default="main" basedir=".">
+
+	<taskdef name="lsref" classname="de.ecclesia.kipeto.ant.ListReferencesTask" classpathref="classpath" />
+	<taskdef name="cpref" classname="de.ecclesia.kipeto.ant.CopyReferenceTask" classpathref="classpath" />
+	<taskdef name="gbc" classname="de.ecclesia.kipeto.ant.CollectGarbageTask" classpathref="classpath" />
+	<taskdef name="deploy" classname="de.ecclesia.kipeto.ant.DeployBlueprintTask" classpathref="classpath" />
+	<taskdef name="blueprint" classname="de.ecclesia.kipeto.ant.CreateBlueprintTask" classpathref="classpath" />
+
+	<target name="main">
+		<!--
+		<cpref repositoryUrl="C:/Programme/kipeto/data/repos" source="test" destination="test2" />
+		<gbc repositoryUrl="C:/Programme/kipeto/data/repos" />
+		<blueprint dataDir="C:/Programme/kipeto/data" source="C:/test2/inst" blueprint="hallo-welt" blueprintDescription="Hallo Welt 2.0"/>
+		<deploy dataDir="C:/Programme/kipeto/data" blueprint="hallo-welt" repositoryUrl="C:/Programme/kipeto/data/repos" timestampSuffix="false" skipExistingBlueprints="false"/>
+		-->
+		<lsref repositoryUrl="ssh://updates.server/srv/www/htdocs/repos" logLevel="DEBUG" privateKey="id_dsa"/>
+	</target>
+</project>
