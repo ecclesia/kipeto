@@ -1,5 +1,5 @@
 # Kipeto
-This is just a rough preliminary guide to get you started. Extensive documentation will follow shortly.
+This is just a rough preliminary guide to get you started. Extensive documentation as well as a binary distribution will follow shortly.
 
 ## How to build
 
