@@ -19,7 +19,7 @@ For the rest of this document we refer to them as `kipeto.jar` and `kipeto-tools
 
 ## How to use
 1. prepare an application directory suitable for distribution
-2. create a blueprint `java -jar kipeto-tools.jar -b <blueprint-name> -d <kipeto-data-dir> -s <application-dir>`
+2. create a blueprint `java -jar kipeto-tools.jar create_blueprint -b <blueprint-name> -n <description> -d <kipeto-data-dir> -s <application-dir>`
 3. publish the repository (`<kipeto-data-dir>/repos`) to a suitable web server such as apache.
 3. install the created blueprint `java -jar kipeto.jar -g -b <blueprint-name> -d <kipeto-data-dir> -r <remote-repository-url> -t <target-dir>`
 

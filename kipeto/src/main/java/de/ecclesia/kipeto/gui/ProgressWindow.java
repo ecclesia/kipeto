@@ -57,7 +57,9 @@ public class ProgressWindow extends JFrame {
 		pack();
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation((screenSize.width - screenSize.width) / 2, (screenSize.height - screenSize.height) / 2);
+		Dimension windowSize = getSize();
+		
+		setLocation((screenSize.width - windowSize.width) / 2, (screenSize.height - windowSize.height) / 2);
 	}
 
 	private void createContents() {
