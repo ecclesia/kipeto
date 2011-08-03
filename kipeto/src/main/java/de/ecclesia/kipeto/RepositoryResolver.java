@@ -62,8 +62,9 @@ public class RepositoryResolver {
 	}
 
 	/**
-	 * Versucht, im übergebenen Repository die Konfigurations-Datei zu finden und daraus ein passendes Repository
-	 * abzuleiten. Schlägt dies fehlt oder tritt ein Fehler auf, wird dieser Fehler gelogt, und das übergebene
+	 * Versucht, im übergebenen Repository die Konfigurations-Datei zu finden
+	 * und daraus ein passendes Repository abzuleiten. Schlägt dies fehlt oder
+	 * tritt ein Fehler auf, wird dieser Fehler gelogt, und das übergebene
 	 * Repository zurückgegeben.
 	 * 
 	 * @return
@@ -81,11 +82,16 @@ public class RepositoryResolver {
 				url = new File(defaultRepositoryUrl).toURI().toURL();
 			}
 			if (!url.getProtocol().equals("http")) {
-				log.warn("Resolving repository-config not implemented for protcol {}", url.getProtocol());
+				log.info("Resolving repository-config not implemented for protocol {} yet", url.getProtocol());
 				return defaultRepositoryUrl;
 			}
 
 			Properties config = loadConfig();
+
+			if (config == null) {
+				return defaultRepositoryUrl;
+			}
+
 			String localIp = determinateLocalIP();
 
 			return resolveRepos(localIp, config);
@@ -97,11 +103,10 @@ public class RepositoryResolver {
 	}
 
 	/**
-	 * Ermittelt anhand der Default-Repository-URL die IP-Adresse der Netzwerkkarte, die Verbindung mit dem
-	 * Ecclesia-Netz hat.
+	 * Ermittelt anhand der Default-Repository-URL die IP-Adresse der
+	 * Netzwerkkarte, die Verbindung zum Repository hat.
 	 */
 	private String determinateLocalIP() throws IOException {
-
 		Socket socket = null;
 
 		try {
@@ -151,7 +156,11 @@ public class RepositoryResolver {
 
 		int statusCode = contentResponse.getStatusLine().getStatusCode();
 		log.debug("HttpGet at {}, Status is {}", configUrl, statusCode);
-		if (statusCode != HttpStatus.SC_OK) {
+		if (statusCode == HttpStatus.SC_NOT_FOUND) {
+			log.info("No repository-config found at {}", configUrl);
+
+			return null;
+		} else if (statusCode != HttpStatus.SC_OK) {
 			String msg = "Error loading " + configUrl + ":\n";
 			msg += contentResponse.getStatusLine().toString();
 
@@ -168,8 +177,9 @@ public class RepositoryResolver {
 	}
 
 	/**
-	 * Ermittelt anhand der lokalen IP-Adresse und der übergebenen Konfiguration, welches Repository für den
-	 * Update-Vorgang verwendet werden soll.
+	 * Ermittelt anhand der lokalen IP-Adresse und der übergebenen
+	 * Konfiguration, welches Repository für den Update-Vorgang verwendet werden
+	 * soll.
 	 */
 	private String resolveRepos(String localIp, Properties config) {
 		for (Object key : config.keySet()) {
@@ -184,8 +194,7 @@ public class RepositoryResolver {
 			}
 		}
 
-		log.warn("No matching config-entry found for {}, falling back to default-repository {}", localIp,
-				defaultRepositoryUrl);
+		log.warn("No matching config-entry found for {}, falling back to default-repository {}", localIp, defaultRepositoryUrl);
 
 		return defaultRepositoryUrl;
 	}

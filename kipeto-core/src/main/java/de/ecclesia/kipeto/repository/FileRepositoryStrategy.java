@@ -122,7 +122,7 @@ public class FileRepositoryStrategy extends WritingRepositoryStrategy {
 			// das rename also fehlschlägt, muss überprüft werden, ob die Datei
 			// nun existiert.
 			if (!success) {
-				Assert.isTrue(success, "Rename fehlgeschlagen");
+				Assert.isTrue(success, "Rename from " + file + " to " + item + " failed");
 			}
 		}
 	}
