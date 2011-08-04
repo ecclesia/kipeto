@@ -35,10 +35,10 @@ import de.ecclesia.kipeto.engine.Plan;
 import de.ecclesia.kipeto.engine.Planner;
 import de.ecclesia.kipeto.engine.UpdateFileMetadataEngine;
 import de.ecclesia.kipeto.repository.AuthenticationProvider;
+import de.ecclesia.kipeto.repository.AuthenticationProviderFactory;
 import de.ecclesia.kipeto.repository.ReadingRepository;
 import de.ecclesia.kipeto.repository.ReadingRepositoryStrategy;
 import de.ecclesia.kipeto.repository.StrategySelector;
-import de.ecclesia.kipeto.tools.AuthenticationProviderFactory;
 
 public class UpdateMetadataApp {
 

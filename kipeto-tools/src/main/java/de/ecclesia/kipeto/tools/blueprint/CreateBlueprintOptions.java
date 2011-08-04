@@ -23,9 +23,9 @@ import java.io.IOException;
 
 import org.kohsuke.args4j.Option;
 
-import de.ecclesia.kipeto.common.util.AbstractOption;
+import de.ecclesia.kipeto.common.util.BaseOptions;
 
-public class CreateBlueprintOptions extends AbstractOption {
+public class CreateBlueprintOptions extends BaseOptions {
 
 	@Option(name = "-d", aliases = { "--data" }, required = true, usage = "Local data directory like 'C:/temp/kipeto", metaVar = "DIR")
 	private String data;
@@ -42,11 +42,8 @@ public class CreateBlueprintOptions extends AbstractOption {
 	@Option(name = "-i", aliases = { "--icon" }, required = false, usage = "Blueprint icon")
 	private String icon;
 
-	@Option(name = "-l", aliases = { "--log-level" }, required = false, usage = "Log Level ")
-	private String logLevel;
-
 	public CreateBlueprintOptions(String[] args) throws IOException {
-		parse(args);
+		super(args);
 	}
 
 	public CreateBlueprintOptions() {
@@ -72,10 +69,6 @@ public class CreateBlueprintOptions extends AbstractOption {
 		return icon;
 	}
 
-	public String getLogLevel() {
-		return logLevel;
-	}
-
 	public void setDataDir(String data) {
 		this.data = data;
 	}
@@ -94,10 +87,6 @@ public class CreateBlueprintOptions extends AbstractOption {
 
 	public void setIcon(String icon) {
 		this.icon = icon;
-	}
-
-	public void setLogLevel(String logLevel) {
-		this.logLevel = logLevel;
 	}
 
 }

@@ -21,9 +21,9 @@ package de.ecclesia.kipeto.tools.gbc;
 
 import org.kohsuke.args4j.Option;
 
-import de.ecclesia.kipeto.tools.ToolOptions;
+import de.ecclesia.kipeto.common.util.BaseOptions;
 
-public class CollectGarbageOptions extends ToolOptions {
+public class CollectGarbageOptions extends BaseOptions {
 
 	@Option(name = "-d", aliases = { "--delete" }, required = false, usage = "Delete unused objects")
 	private boolean delete;
@@ -32,7 +32,7 @@ public class CollectGarbageOptions extends ToolOptions {
 	}
 
 	public CollectGarbageOptions(String[] args) {
-		parse(args);
+		super(args);
 	}
 
 	public boolean getDelete() {

@@ -21,9 +21,9 @@ package de.ecclesia.kipeto.tools.rmref;
 
 import org.kohsuke.args4j.Option;
 
-import de.ecclesia.kipeto.tools.ToolOptions;
+import de.ecclesia.kipeto.common.util.BaseOptions;
 
-public class RemoveReferenceOptions extends ToolOptions {
+public class RemoveReferenceOptions extends BaseOptions {
 
 	@Option(name = "-b", aliases = { "--reference" }, required = true, usage = "Reference to remove", metaVar = "VAR")
 	private String reference;
@@ -32,7 +32,7 @@ public class RemoveReferenceOptions extends ToolOptions {
 	}
 
 	public RemoveReferenceOptions(String[] args) {
-		parse(args);
+		super(args);
 	}
 
 	public String getReference() {

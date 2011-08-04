@@ -21,9 +21,9 @@ package de.ecclesia.kipeto.tools.cpref;
 
 import org.kohsuke.args4j.Option;
 
-import de.ecclesia.kipeto.tools.ToolOptions;
+import de.ecclesia.kipeto.common.util.BaseOptions;
 
-public class CopyReferenceOptions extends ToolOptions {
+public class CopyReferenceOptions extends BaseOptions {
 
 	@Option(name = "-s", aliases = { "--source" }, required = true, usage = "Reference to copy", metaVar = "VAR")
 	private String source;
@@ -35,7 +35,7 @@ public class CopyReferenceOptions extends ToolOptions {
 	}
 
 	public CopyReferenceOptions(String[] args) {
-		parse(args);
+		super(args);
 	}
 
 	public String getDestination() {

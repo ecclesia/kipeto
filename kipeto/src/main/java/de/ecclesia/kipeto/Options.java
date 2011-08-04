@@ -21,12 +21,9 @@ package de.ecclesia.kipeto;
 
 import org.kohsuke.args4j.Option;
 
-import de.ecclesia.kipeto.common.util.AbstractOption;
+import de.ecclesia.kipeto.common.util.BaseOptions;
 
-public class Options extends AbstractOption {
-
-	@Option(name = "-r", aliases = { "--repository" }, required = true, usage = "Remote-Repository URL like 'http://hostname/repos", metaVar = "URL")
-	private String repository;
+public class Options extends BaseOptions {
 
 	@Option(name = "-d", aliases = { "--data" }, required = true, usage = "Local data directory like 'C:/temp/kipeto", metaVar = "DIR")
 	private String data;
@@ -43,9 +40,6 @@ public class Options extends AbstractOption {
 	@Option(name = "-c", aliases = { "--call" }, required = false, usage = "Run after update")
 	private String afterUpdate;
 
-	@Option(name = "-l", aliases = { "--debug-level" }, required = false, usage = "Debug Level ")
-	private String debugLevel;
-	
 	@Option(name = "-o", aliases = { "--suppressOfflineErrorMsg" }, required = false, usage = "Suppress Offline Error Message")
 	private boolean suppressOfflineErrorMsg;
 	
@@ -59,11 +53,7 @@ public class Options extends AbstractOption {
 	}
 	
 	public Options(String[] args) {
-		parse(args);
-	}
-
-	public String getRepository() {
-		return repository;
+		super(args);
 	}
 
 	public String getData() {
@@ -76,10 +66,6 @@ public class Options extends AbstractOption {
 
 	public String getTarget() {
 		return target;
-	}
-
-	public String getDebugLevel() {
-		return debugLevel;
 	}
 
 	public boolean noSelfUpdate() {

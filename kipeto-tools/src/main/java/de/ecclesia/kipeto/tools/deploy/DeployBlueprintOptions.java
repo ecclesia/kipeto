@@ -21,9 +21,9 @@ package de.ecclesia.kipeto.tools.deploy;
 
 import org.kohsuke.args4j.Option;
 
-import de.ecclesia.kipeto.tools.ToolOptions;
+import de.ecclesia.kipeto.common.util.BaseOptions;
 
-public class DeployBlueprintOptions extends ToolOptions {
+public class DeployBlueprintOptions extends BaseOptions {
 
 	@Option(name = "-d", aliases = { "--data" }, required = true, usage = "Local data directory like 'C:/temp/kipeto", metaVar = "DIR")
 	private String dataDir;
@@ -39,7 +39,7 @@ public class DeployBlueprintOptions extends ToolOptions {
 	}
 
 	public DeployBlueprintOptions(String[] args) {
-		parse(args);
+		super(args);
 	}
 
 	public String getDataDir() {

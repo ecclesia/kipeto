@@ -36,6 +36,11 @@ public class StrategySelector {
 		return getReadingStrategy(url, null, tempDir);
 	}
 
+	public static ReadingRepositoryStrategy getReadingStrategy(String url, AuthenticationProvider authenticationProvider) {
+		return getReadingStrategy(url, authenticationProvider, null);
+	}	
+	
+	
 	public static ReadingRepositoryStrategy getReadingStrategy(String url, AuthenticationProvider authenticationProvider, File tempDir) {
 		ReadingRepositoryStrategy repository;
 		if (url.toLowerCase().startsWith("http:")) {

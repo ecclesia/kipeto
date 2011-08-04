@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import de.ecclesia.kipeto.common.AWTExceptionErrorDialog;
 import de.ecclesia.kipeto.common.util.LoggerConfigurer;
 import de.ecclesia.kipeto.gui.GUI;
+import de.ecclesia.kipeto.repository.AuthenticationProvider;
+import de.ecclesia.kipeto.repository.AuthenticationProviderFactory;
 import de.ecclesia.kipeto.repository.FileRepositoryStrategy;
 import de.ecclesia.kipeto.repository.ReadingRepositoryStrategy;
 import de.ecclesia.kipeto.repository.StrategySelector;
@@ -76,7 +78,7 @@ public class KipetoApp {
 
 	private void run() throws IOException {
 		LoggerConfigurer.configureFileAppender(options.getData(), "kipeto");
-		LoggerConfigurer.configureConsoleAppender(Level.toLevel(options.getDebugLevel(), Level.INFO));
+		LoggerConfigurer.configureConsoleAppender(Level.toLevel(options.getLogLevel(), Level.INFO));
 
 		ReadingRepositoryStrategy remoteStrategy = null;
 		FileRepositoryStrategy fileRepositoryStrategy = null;
@@ -90,13 +92,14 @@ public class KipetoApp {
 
 			String repositoryUrl;
 			if (options.useStaticRepository()) {
-				repositoryUrl = options.getRepository();
+				repositoryUrl = options.getRepositoryUrl();
 			} else {
-				RepositoryResolver resolver = new RepositoryResolver(options.getRepository());
+				RepositoryResolver resolver = new RepositoryResolver(options.getRepositoryUrl());
 				repositoryUrl = resolver.resolveReposUrl();
 			}
 
-			remoteStrategy = StrategySelector.getReadingStrategy(repositoryUrl);
+			AuthenticationProvider authenticationProvider = AuthenticationProviderFactory.getProvider(options);
+			remoteStrategy = StrategySelector.getReadingStrategy(repositoryUrl, authenticationProvider);
 			fileRepositoryStrategy = new FileRepositoryStrategy(repositoryDir, tempDir);
 			boolean suppressOfflineErrorMsg = options.isSuppressOfflineErrorMsg();
 

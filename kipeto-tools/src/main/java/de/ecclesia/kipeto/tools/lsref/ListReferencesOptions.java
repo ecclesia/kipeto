@@ -19,15 +19,15 @@
  */
 package de.ecclesia.kipeto.tools.lsref;
 
-import de.ecclesia.kipeto.tools.ToolOptions;
+import de.ecclesia.kipeto.common.util.BaseOptions;
 
-public class ListReferencesOptions extends ToolOptions {
+public class ListReferencesOptions extends BaseOptions {
 
 	public ListReferencesOptions() {
 	}
 
 	public ListReferencesOptions(String[] args) {
-		parse(args);
+		super(args);
 	}
 
 

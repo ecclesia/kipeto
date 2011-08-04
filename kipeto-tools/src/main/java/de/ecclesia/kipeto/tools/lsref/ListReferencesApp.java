@@ -35,11 +35,11 @@ import de.ecclesia.kipeto.blueprint.Blueprint;
 import de.ecclesia.kipeto.common.util.LoggerConfigurer;
 import de.ecclesia.kipeto.common.util.Strings;
 import de.ecclesia.kipeto.repository.AuthenticationProvider;
+import de.ecclesia.kipeto.repository.AuthenticationProviderFactory;
 import de.ecclesia.kipeto.repository.ReadingRepository;
 import de.ecclesia.kipeto.repository.ReadingRepositoryStrategy;
 import de.ecclesia.kipeto.repository.Reference;
 import de.ecclesia.kipeto.repository.StrategySelector;
-import de.ecclesia.kipeto.tools.AuthenticationProviderFactory;
 
 public class ListReferencesApp {
 

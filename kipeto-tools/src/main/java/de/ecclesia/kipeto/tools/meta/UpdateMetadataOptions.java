@@ -21,9 +21,9 @@ package de.ecclesia.kipeto.tools.meta;
 
 import org.kohsuke.args4j.Option;
 
-import de.ecclesia.kipeto.tools.ToolOptions;
+import de.ecclesia.kipeto.common.util.BaseOptions;
 
-public class UpdateMetadataOptions extends ToolOptions {
+public class UpdateMetadataOptions extends BaseOptions {
 
 	@Option(name = "-b", aliases = { "--blueprint" }, required = true, usage = "Blueprint reference name", metaVar = "REF")
 	private String blueprint;
@@ -35,7 +35,7 @@ public class UpdateMetadataOptions extends ToolOptions {
 	}
 
 	public UpdateMetadataOptions(String[] args) {
-		parse(args);
+		super(args);
 	}
 
 	public String getBlueprint() {

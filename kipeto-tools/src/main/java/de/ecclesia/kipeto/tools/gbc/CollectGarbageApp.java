@@ -33,10 +33,10 @@ import com.jcraft.jsch.SftpException;
 import de.ecclesia.kipeto.common.util.LoggerConfigurer;
 import de.ecclesia.kipeto.common.util.Tuple.Tuple2;
 import de.ecclesia.kipeto.repository.AuthenticationProvider;
+import de.ecclesia.kipeto.repository.AuthenticationProviderFactory;
 import de.ecclesia.kipeto.repository.StrategySelector;
 import de.ecclesia.kipeto.repository.WritingRepository;
 import de.ecclesia.kipeto.repository.WritingRepositoryStrategy;
-import de.ecclesia.kipeto.tools.AuthenticationProviderFactory;
 
 public class CollectGarbageApp {
 
