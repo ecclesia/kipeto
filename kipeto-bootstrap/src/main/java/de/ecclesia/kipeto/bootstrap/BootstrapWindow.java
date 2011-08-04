@@ -90,7 +90,7 @@ public class BootstrapWindow extends JFrame {
 		gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
 		contentPane.setLayout(gbl_contentPane);
 
-		label = new JLabel("Herunterladen der neuen Update Engine...");
+		label = new JLabel("Herunterladen der neuen Kipeto-Engine...");
 		GridBagConstraints gbc_label = new GridBagConstraints();
 		gbc_label.anchor = GridBagConstraints.WEST;
 		gbc_label.gridx = 0;
