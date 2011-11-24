@@ -35,7 +35,7 @@ public class Options extends BaseOptions {
 	private String target;
 
 	@Option(name = "-g", aliases = { "--gui" }, required = false, usage = "Display output in fancy GUI")
-	private Boolean gui = Boolean.FALSE;
+	private boolean gui;
 
 	@Option(name = "-c", aliases = { "--call" }, required = false, usage = "Run after update")
 	private String afterUpdate;
@@ -47,7 +47,7 @@ public class Options extends BaseOptions {
 	private boolean useStaticRepository;
 	
 	@Option(name = "-nsu", aliases = { "--no-self-update" }, required = false, usage = "no self Update")
-	private Boolean noSelfUpdate = Boolean.FALSE;
+	private boolean noSelfUpdate;
 
 	public Options() {
 	}
@@ -72,7 +72,7 @@ public class Options extends BaseOptions {
 		return noSelfUpdate;
 	}
 	
-	public Boolean isGui() {
+	public boolean isGui() {
 		return gui;
 	}
 

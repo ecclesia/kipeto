@@ -66,8 +66,6 @@ public class GUI implements JobListener<JobEvent> {
 
 	private static final Logger logger = LoggerFactory.getLogger(KipetoApp.class);
 
-	protected static final long MS_TO_WAIT_UNTIL_WINDOW = 10000;
-
 	private final String bluePrintRef;
 
 	private final ReadingRepositoryStrategy repositry;
@@ -115,63 +113,53 @@ public class GUI implements JobListener<JobEvent> {
 		window = new ProgressWindow();
 		window.setVisible(true);
 
-		Thread runThread = new Thread(new Runnable() {
+		try {
+			new Timer().schedule(new TimerTask() {
 
-			public void run() {
-				try {
-					new Timer().schedule(new TimerTask() {
-
-						@Override
-						public void run() {
-							try {
-								updateWindow();
-							} catch (InterruptedException e) {
-								logger.error(e.getMessage(), e);
-							} catch (InvocationTargetException e) {
-								logger.error(e.getMessage(), e);
-							}
-						}
-
-					}, 0, 100);
-
-					job.run();
-					updateWindow();
-
-					window.dispose();
-				} catch (KipetoException e) {
-					logger.error(e.getMessage(), e);
+				@Override
+				public void run() {
 					try {
-						SwingUtilities.invokeAndWait(new ExceptionHandler(GUI.this, e));
-					} catch (InterruptedException e1) {
-						logger.error(e.getMessage(), e1);
-					} catch (InvocationTargetException e1) {
-						logger.error(e.getMessage(), e1);
-					}
-				} catch (final Exception e) {
-					logger.error(e.getMessage(), e);
-					try {
-						SwingUtilities.invokeAndWait(new Runnable() {
-
-							public void run() {
-								AWTExceptionErrorDialog errorDialog = new AWTExceptionErrorDialog(window, e);
-								errorDialog.setVisible(true);
-
-								window.dispose();
-							}
-						});
-					} catch (InterruptedException e2) {
+						updateWindow();
+					} catch (InterruptedException e) {
 						logger.error(e.getMessage(), e);
-					} catch (InvocationTargetException e2) {
+					} catch (InvocationTargetException e) {
 						logger.error(e.getMessage(), e);
 					}
 				}
+
+			}, 0, 100);
+
+			job.run();
+			updateWindow();
+
+			window.dispose();
+		} catch (KipetoException e) {
+			logger.error(e.getMessage(), e);
+			try {
+				SwingUtilities.invokeAndWait(new ExceptionHandler(GUI.this, e));
+			} catch (InterruptedException e1) {
+				logger.error(e.getMessage(), e1);
+			} catch (InvocationTargetException e1) {
+				logger.error(e.getMessage(), e1);
 			}
+		} catch (final Exception e) {
+			logger.error(e.getMessage(), e);
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
 
-		});
-		runThread.setDaemon(true);
-		runThread.start();
+					public void run() {
+						AWTExceptionErrorDialog errorDialog = new AWTExceptionErrorDialog(window, e);
+						errorDialog.setVisible(true);
 
-		window.setVisible(true);
+						window.dispose();
+					}
+				});
+			} catch (InterruptedException e2) {
+				logger.error(e.getMessage(), e);
+			} catch (InvocationTargetException e2) {
+				logger.error(e.getMessage(), e);
+			}
+		}
 	}
 
 	public void handleJobEvent(final JobEvent event) {

@@ -104,8 +104,7 @@ public class KipetoApp {
 			boolean suppressOfflineErrorMsg = options.isSuppressOfflineErrorMsg();
 
 			if (options.isGui()) {
-				GUI gui = new GUI(remoteStrategy, fileRepositoryStrategy, options.getBlueprint(), new File(options.getTarget()),
-						suppressOfflineErrorMsg);
+				GUI gui = new GUI(remoteStrategy, fileRepositoryStrategy, options.getBlueprint(), new File(options.getTarget()), suppressOfflineErrorMsg);
 				gui.run();
 				launchTarget = gui.isLaunchTarget();
 			} else {
