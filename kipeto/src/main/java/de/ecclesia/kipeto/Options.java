@@ -19,41 +19,55 @@
  */
 package de.ecclesia.kipeto;
 
+import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 
 import de.ecclesia.kipeto.common.util.BaseOptions;
 
 public class Options extends BaseOptions {
 
-	@Option(name = "-d", aliases = { "--data" }, required = true, usage = "Local data directory like 'C:/temp/kipeto", metaVar = "DIR")
-	private String data;
+	@Option(name = "-d", aliases = { "--data" }, usage = "Local data directory like 'C:/temp/kipeto", metaVar = "DIR")
+	protected String data;
 
-	@Option(name = "-b", aliases = { "--blueprint" }, required = true, usage = "Blueprint reference name", metaVar = "REF")
-	private String blueprint;
+	@Option(name = "-b", aliases = { "--blueprint" }, usage = "Blueprint reference name", metaVar = "REF")
+	protected String blueprint;
 
-	@Option(name = "-t", aliases = { "--target" }, required = true, usage = "Local directory to update like 'C:/Programme/Anwendung'", metaVar = "DIR")
-	private String target;
+	@Option(name = "-t", aliases = { "--target" }, usage = "Local directory to update like 'C:/Programme/Anwendung'", metaVar = "DIR")
+	protected String target;
 
-	@Option(name = "-g", aliases = { "--gui" }, required = false, usage = "Display output in fancy GUI")
-	private boolean gui;
+	@Option(name = "-g", aliases = { "--gui" }, usage = "Display output in fancy GUI")
+	protected boolean gui;
 
-	@Option(name = "-c", aliases = { "--call" }, required = false, usage = "Run after update")
-	private String afterUpdate;
+	@Option(name = "-c", aliases = { "--call" }, usage = "Run after update")
+	protected String afterUpdate;
 
-	@Option(name = "-o", aliases = { "--suppressOfflineErrorMsg" }, required = false, usage = "Suppress Offline Error Message")
-	private boolean suppressOfflineErrorMsg;
+	@Option(name = "-o", aliases = { "--suppressOfflineErrorMsg" }, usage = "Suppress Offline Error Message")
+	protected boolean suppressOfflineErrorMsg;
 	
-	@Option(name = "-s", aliases = { "--static-repository" }, required = false, usage = "Disable dynamic repository lookup")
-	private boolean useStaticRepository;
+	@Option(name = "-s", aliases = { "--static-repository" }, usage = "Disable dynamic repository lookup")
+	protected boolean useStaticRepository;
 	
-	@Option(name = "-nsu", aliases = { "--no-self-update" }, required = false, usage = "no self Update")
-	private boolean noSelfUpdate;
+	@Option(name = "-nsu", aliases = { "--no-self-update" }, usage = "no self Update")
+	protected boolean noSelfUpdate;
 
 	public Options() {
 	}
 	
 	public Options(String[] args) {
 		super(args);
+	}
+	
+	@Override
+	protected void checkRequiredArguments() throws CmdLineException {
+		super.checkRequiredArguments();
+		checkRequiredArgument(Options.class, "data");
+		checkRequiredArgument(Options.class, "blueprint");
+		checkRequiredArgument(Options.class, "target");
+	}
+	
+	@Override
+	protected void checkRequiredArgument(Class<? extends BaseOptions> optionClass, String fieldName) throws CmdLineException {
+		super.checkRequiredArgument(optionClass, fieldName);
 	}
 
 	public String getData() {

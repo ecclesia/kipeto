@@ -19,16 +19,17 @@
  */
 package de.ecclesia.kipeto.tools.deploy;
 
+import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 
 import de.ecclesia.kipeto.common.util.BaseOptions;
 
 public class DeployBlueprintOptions extends BaseOptions {
 
-	@Option(name = "-d", aliases = { "--data" }, required = true, usage = "Local data directory like 'C:/temp/kipeto", metaVar = "DIR")
+	@Option(name = "-d", aliases = { "--data" }, usage = "Local data directory like 'C:/temp/kipeto", metaVar = "DIR")
 	private String dataDir;
 
-	@Option(name = "-b", aliases = { "--blueprint" }, required = true, usage = "Blueprint reference name", metaVar = "REF")
+	@Option(name = "-b", aliases = { "--blueprint" }, usage = "Blueprint reference name", metaVar = "REF")
 	private String blueprint;
 
 	private boolean timestampSuffix = true;
@@ -74,4 +75,11 @@ public class DeployBlueprintOptions extends BaseOptions {
 		return timestampSuffix;
 	}
 
+	@Override
+	protected void checkRequiredArguments() throws CmdLineException {
+		super.checkRequiredArguments();
+		checkRequiredArgument(DeployBlueprintOptions.class, "data");
+		checkRequiredArgument(DeployBlueprintOptions.class, "blueprint");
+	}
+	
 }

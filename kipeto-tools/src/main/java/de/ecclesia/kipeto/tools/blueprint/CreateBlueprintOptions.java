@@ -21,25 +21,26 @@ package de.ecclesia.kipeto.tools.blueprint;
 
 import java.io.IOException;
 
+import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 
 import de.ecclesia.kipeto.common.util.BaseOptions;
 
 public class CreateBlueprintOptions extends BaseOptions {
 
-	@Option(name = "-d", aliases = { "--data" }, required = true, usage = "Local data directory like 'C:/temp/kipeto", metaVar = "DIR")
+	@Option(name = "-d", aliases = { "--data" }, usage = "Local data directory like 'C:/temp/kipeto", metaVar = "DIR")
 	private String data;
 
-	@Option(name = "-s", aliases = { "--source" }, required = true, usage = "Local directory to make Blueprint from 'C:/Programme/Anwendung'", metaVar = "DIR")
+	@Option(name = "-s", aliases = { "--source" }, usage = "Local directory to make Blueprint from 'C:/Programme/Anwendung'", metaVar = "DIR")
 	private String source;
 
-	@Option(name = "-b", aliases = { "--blueprint" }, required = true, usage = "Blueprint reference name", metaVar = "REF")
+	@Option(name = "-b", aliases = { "--blueprint" }, usage = "Blueprint reference name", metaVar = "REF")
 	private String blueprint;
 
-	@Option(name = "-n", aliases = { "--description" }, required = true, usage = "Blueprint description")
+	@Option(name = "-n", aliases = { "--description" }, usage = "Blueprint description")
 	private String description;
 
-	@Option(name = "-i", aliases = { "--icon" }, required = false, usage = "Blueprint icon")
+	@Option(name = "-i", aliases = { "--icon" }, usage = "Blueprint icon")
 	private String icon;
 
 	public CreateBlueprintOptions(String[] args) throws IOException {
@@ -89,4 +90,13 @@ public class CreateBlueprintOptions extends BaseOptions {
 		this.icon = icon;
 	}
 
+	@Override
+	protected void checkRequiredArguments() throws CmdLineException {
+		super.checkRequiredArguments();
+		checkRequiredArgument(CreateBlueprintOptions.class, "data");
+		checkRequiredArgument(CreateBlueprintOptions.class, "source");
+		checkRequiredArgument(CreateBlueprintOptions.class, "blueprint");
+		checkRequiredArgument(CreateBlueprintOptions.class, "description");
+	}
+	
 }

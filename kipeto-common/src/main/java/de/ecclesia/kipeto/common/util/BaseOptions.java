@@ -19,9 +19,14 @@
  */
 package de.ecclesia.kipeto.common.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -29,18 +34,21 @@ import org.kohsuke.args4j.Option;
 
 public class BaseOptions {
 
-	@Option(name = "-l", aliases = { "--logLevel" }, required = false, usage = "Log Level")
-	private String logLevel;
+	@Option(name = "-l", aliases = { "--logLevel" }, usage = "Log Level")
+	protected String logLevel;
 
-	@Option(name = "-r", aliases = { "--repository" }, required = true, usage = "Remote-Repository URL like 'ssh://user@updates01.ecclesia:/srv/www/htdocs/repos", metaVar = "URL")
-	private String repositoryUrl;
-	
-	@Option(name = "-p", aliases = { "--password" }, required = false, usage = "Password")
-	private String password;
+	@Option(name = "-r", aliases = { "--repository" }, usage = "Remote-Repository URL like 'ssh://user@updates01.ecclesia:/srv/www/htdocs/repos", metaVar = "URL")
+	protected String repositoryUrl;
 
-	@Option(name = "-k", aliases = { "--privateKeyFile" }, required = false, usage = "Private Key File", metaVar = "URL")
-	private String privateKey;
-	
+	@Option(name = "-p", aliases = { "--password" }, usage = "Password")
+	protected String password;
+
+	@Option(name = "-k", aliases = { "--privateKeyFile" }, usage = "Private Key File", metaVar = "URL")
+	protected String privateKey;
+
+	@Option(name = "-pf", aliases = { "--parmFile" }, usage = "File which contains command line parameters")
+	protected File parameterFile;
+
 	public BaseOptions() {
 	}
 
@@ -63,8 +71,11 @@ public class BaseOptions {
 	public String getRepositoryUrl() {
 		return repositoryUrl;
 	}
-	
-	
+
+	public File getParameterFile() {
+		return parameterFile;
+	}
+
 	public void setLogLevel(String logLevel) {
 		this.logLevel = logLevel;
 	}
@@ -80,7 +91,7 @@ public class BaseOptions {
 	public void setRepositoryUrl(String repositoryUrl) {
 		this.repositoryUrl = repositoryUrl;
 	}
-	
+
 	private void parse(String[] args) {
 		String[] preProcessedArgs = preProcessArguments(args);
 
@@ -93,6 +104,9 @@ public class BaseOptions {
 		try {
 			// parse the arguments.
 			parser.parseArgument(preProcessedArgs);
+			String[] pfArgs = getParameterFileArguments();
+			parser.parseArgument(pfArgs);
+			checkRequiredArguments();
 
 		} catch (CmdLineException e) {
 			// if there's a problem in the command line,
@@ -110,6 +124,59 @@ public class BaseOptions {
 			// parser.printExample(ALL));
 
 			System.exit(1);
+		}
+	}
+
+	private String[] getParameterFileArguments() {
+		if (parameterFile == null) return new String[0];
+		try {
+			return unsafeGetParameterFileArguments();
+		} catch (IOException e) {
+			return new String[0];
+		}
+	}
+
+	private String[] unsafeGetParameterFileArguments() throws IOException {
+		Properties properties = new Properties();
+		FileInputStream parmFileStream = new FileInputStream(parameterFile);
+		properties.load(parmFileStream);
+		parmFileStream.close();
+
+		ArrayList<String> parmList = new ArrayList<String>();
+		for (String key : properties.stringPropertyNames()) {
+			parmList.add(key);
+			String property = properties.getProperty(key);
+			if (property != null && !property.isEmpty()) parmList.add(property);
+		}
+		String[] newArgs = parmList.toArray(new String[parmList.size()]);
+		return newArgs;
+	}
+	
+	protected void checkRequiredArguments() throws CmdLineException {
+		checkRequiredArgument(BaseOptions.class, "repositoryUrl");
+	}
+
+	protected void checkRequiredArgument(Class<? extends BaseOptions> optionClass, String fieldName) throws CmdLineException {
+		try {
+			Field field = optionClass.getDeclaredField(fieldName);
+			try {
+				field.setAccessible(true);
+				Option option = field.getAnnotation(Option.class);
+				Object value = field.get(this);
+				if (value != null) return;
+				String optionName = option.name();
+				throw new CmdLineException("Option must be set: " + optionName);
+			} finally {
+				field.setAccessible(false);
+			}
+		} catch (SecurityException e) {
+			throw new RuntimeException("Field access failed. This is a bug!", e);
+		} catch (NoSuchFieldException e) {
+			throw new RuntimeException("Field access failed. This is a bug!", e);
+		} catch (IllegalArgumentException e) {
+			throw new RuntimeException("Field access failed. This is a bug!", e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("Field access failed. This is a bug!", e);
 		}
 	}
 
