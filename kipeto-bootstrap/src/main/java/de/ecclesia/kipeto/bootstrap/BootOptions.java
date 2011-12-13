@@ -23,29 +23,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-public class BootOptions {
+import de.ecclesia.kipeto.common.util.BaseOptions;
 
-	@Option(name = "-r", aliases = { "--repository" }, required = true, usage = "Remote-Repository URL like 'http://hostname/repos", metaVar = "URL")
-	private String repository;
+public class BootOptions extends BaseOptions {
 
-	@Option(name = "-d", aliases = { "--data" }, required = true, usage = "Local data directory like 'C:/temp/kipeto", metaVar = "DIR")
+	@Option(name = "-d", aliases = { "--data" }, usage = "Local data directory like 'C:/temp/kipeto", metaVar = "DIR")
 	private String data;
 
-	@Option(name = "-g", aliases = { "--gui" }, required = false, usage = "Display output in fancy GUI")
-	private Boolean gui = Boolean.FALSE;
+	@Option(name = "-g", aliases = { "--gui" }, usage = "Display output in fancy GUI")
+	private boolean gui;
 
-	@Option(name = "-l", aliases = { "--debug-level" }, required = false, usage = "Debug Level ")
-	private String debugLevel;
-
-	@Option(name = "-nsu", aliases = { "--no-self-update" }, required = false, usage = "no self Update")
-	private Boolean noSelfUpdate = Boolean.FALSE;
+	@Option(name = "-nsu", aliases = { "--no-self-update" }, usage = "no self Update")
+	private boolean noSelfUpdate;
 
 	private static final String[] optionWhiteList = { "-r", "-d", "-g", "-l", "-nsu", "--repository", "--data",
-			"--gui", "--debug-level", "--no-self-update" };
+			"--gui", "--debug-level", "--no-self-update", "-pf", "--parameterFile" };
 
 	public BootOptions() {
 	}
@@ -54,59 +48,21 @@ public class BootOptions {
 		parse(args);
 	}
 
-	public String getRepository() {
-		return repository;
-	}
-
 	public String getData() {
 		return data;
 	}
 
-	public String getDebugLevel() {
-		return debugLevel;
-	}
-	
 	public boolean noSelfUpdate() {
 		return noSelfUpdate;
 	}
 
-	public Boolean isGui() {
+	public boolean isGui() {
 		return gui;
 	}
 
-	public void parse(String[] args) {
-		String[] preProcessedArgs = preProcessArguments(args);
-
-		CmdLineParser parser = new CmdLineParser(this);
-
-		// if you have a wider console, you could increase the value;
-		// here 80 is also the default
-		parser.setUsageWidth(130);
-
-		try {
-			// parse the arguments.
-			parser.parseArgument(preProcessedArgs);
-
-		} catch (CmdLineException e) {
-			// if there's a problem in the command line,
-			// you'll get this exception. this will report
-			// an error message.
-			System.err.println(e.getMessage());
-			// System.err.println("java -jar " + jarName() +
-			// " [options...] arguments...");
-			// print the list of available options
-			parser.printUsage(System.err);
-			System.err.println();
-
-			// print option sample. This is useful some time
-			// System.err.println("  Example: java -jar " + jarName() + " " +
-			// parser.printExample(ALL));
-
-			System.exit(1);
-		}
-	}
-
-	private String[] preProcessArguments(String[] args) {
+	protected String[] preProcessArguments(String[] args) {
+		args = super.preProcessArguments(args);
+		
 		List<String> cleanArgs = new ArrayList<String>();
 
 		List<String> whiteList = new ArrayList<String>();

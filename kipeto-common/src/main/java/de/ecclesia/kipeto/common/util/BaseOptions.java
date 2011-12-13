@@ -92,7 +92,7 @@ public class BaseOptions {
 		this.repositoryUrl = repositoryUrl;
 	}
 
-	private void parse(String[] args) {
+	protected void parse(String[] args) {
 		String[] preProcessedArgs = preProcessArguments(args);
 
 		CmdLineParser parser = new CmdLineParser(this);
@@ -104,7 +104,7 @@ public class BaseOptions {
 		try {
 			// parse the arguments.
 			parser.parseArgument(preProcessedArgs);
-			String[] pfArgs = getParameterFileArguments();
+			String[] pfArgs = getParameterFileArguments(parameterFile);
 			parser.parseArgument(pfArgs);
 			checkRequiredArguments();
 
@@ -127,16 +127,17 @@ public class BaseOptions {
 		}
 	}
 
-	private String[] getParameterFileArguments() {
+	public String[] getParameterFileArguments(File parameterFile) {
 		if (parameterFile == null) return new String[0];
 		try {
-			return unsafeGetParameterFileArguments();
+			String[] parameterFileArguments = unsafeGetParameterFileArguments(parameterFile);
+			return preProcessArguments(parameterFileArguments);
 		} catch (IOException e) {
 			return new String[0];
 		}
 	}
 
-	private String[] unsafeGetParameterFileArguments() throws IOException {
+	private String[] unsafeGetParameterFileArguments(File parameterFile) throws IOException {
 		Properties properties = new Properties();
 		FileInputStream parmFileStream = new FileInputStream(parameterFile);
 		properties.load(parmFileStream);
@@ -180,7 +181,7 @@ public class BaseOptions {
 		}
 	}
 
-	private String[] preProcessArguments(String[] argsArray) {
+	protected String[] preProcessArguments(String[] argsArray) {
 		List<String> args = new ArrayList<String>();
 		args.addAll(Arrays.asList(argsArray));
 		args.remove("-console");

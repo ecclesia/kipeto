@@ -119,11 +119,11 @@ public class BootstrapApp {
 	}
 
 	private void checkForUpdate() throws Exception {
-		if (!options.getRepository().toLowerCase().startsWith("http")) {
+		if (!options.getRepositoryUrl().toLowerCase().startsWith("http")) {
 			return;
 		}
 
-		updateUrl = String.format("%s/%s/%s", options.getRepository(), DIST_DIR, JAR_FILENAME);
+		updateUrl = String.format("%s/%s/%s", options.getRepositoryUrl(), DIST_DIR, JAR_FILENAME);
 		logger.info("Looking for new Kipeto Jar at {}", updateUrl);
 
 		client = new DefaultHttpClient();
@@ -131,7 +131,7 @@ public class BootstrapApp {
 
 		new WindowThread(window).start();
 
-		window.label.setText("Connecting to repository " + options.getRepository());
+		window.label.setText("Connecting to repository " + options.getRepositoryUrl());
 		HttpHead httpHead = new HttpHead(updateUrl);
 		HttpResponse headResponse = client.execute(httpHead);
 		int statusCode = headResponse.getStatusLine().getStatusCode();
@@ -188,7 +188,7 @@ public class BootstrapApp {
 		this.options = new BootOptions(args);
 
 		appender = LoggerConfigurer.configureFileAppender(options.getData(), "bootstrapper");
-		LoggerConfigurer.configureConsoleAppender(Level.toLevel(options.getDebugLevel(), Level.INFO));
+		LoggerConfigurer.configureConsoleAppender(Level.toLevel(options.getLogLevel(), Level.INFO));
 
 		logger.debug("Options: {}", options);
 
