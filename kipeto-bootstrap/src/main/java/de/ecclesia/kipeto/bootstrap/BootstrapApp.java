@@ -84,11 +84,11 @@ public class BootstrapApp {
 
 	private BootstrapWindow window;
 
-	private String updateUrl;
-
 	private long contentLength;
 
 	private FileAppender appender;
+
+	private HTTPUpdateStrategy updateStrategy;
 
 	public static void main(String[] args) throws Exception {
 		BootstrapApp bootstrapper = new BootstrapApp(args);
@@ -116,50 +116,6 @@ public class BootstrapApp {
 		}
 
 		System.exit(0);
-	}
-
-	private void checkForUpdate() throws Exception {
-		if (!options.getRepositoryUrl().toLowerCase().startsWith("http")) {
-			return;
-		}
-
-		updateUrl = String.format("%s/%s/%s", options.getRepositoryUrl(), DIST_DIR, JAR_FILENAME);
-		logger.info("Looking for new Kipeto Jar at {}", updateUrl);
-
-		client = new DefaultHttpClient();
-		window = new BootstrapWindow();
-
-		new WindowThread(window).start();
-
-		window.label.setText("Connecting to repository " + options.getRepositoryUrl());
-		HttpHead httpHead = new HttpHead(updateUrl);
-		HttpResponse headResponse = client.execute(httpHead);
-		int statusCode = headResponse.getStatusLine().getStatusCode();
-		logger.debug("HttpHead at {}, Status is {}", updateUrl, statusCode);
-		if (statusCode != HttpStatus.SC_OK) {
-			throw new RuntimeException(headResponse.getStatusLine().toString());
-		}
-
-		Header lastModifiedHeader = headResponse.getFirstHeader("Last-Modified");
-		Date lastModified = DateUtils.parseDate(lastModifiedHeader.getValue());
-		logger.debug("HttpHead {} - Last-Modified: {}", updateUrl, lastModified);
-
-		Header contentLengthHeader = headResponse.getFirstHeader("Content-Length");
-		contentLength = Long.parseLong(contentLengthHeader.getValue());
-		logger.debug("HttpHead {} - Content-Length: {}", updateUrl, contentLength);
-
-		logger.debug("Local Kipeto Jar {} - Last-Modified: {}", jar, new Date(jar.lastModified()));
-		logger.debug("Local Kipeto Jar {} - Content-Length: {}", jar, jar.length());
-
-		if (!jar.exists() || lastModified.getTime() != jar.lastModified() || contentLength != jar.length()) {
-			logger.info("Update found for {}", jar);
-			update();
-		} else {
-			logger.info("No update found for {}", jar);
-		}
-
-		window.setEnabled(false);
-		window.dispose();
 	}
 
 	private void launchKipeto() throws Exception {
@@ -192,8 +148,7 @@ public class BootstrapApp {
 
 		logger.debug("Options: {}", options);
 
-		File rootDir = new File(BootstrapApp.class.getProtectionDomain().getCodeSource().getLocation().getPath())
-				.getParentFile();
+		File rootDir = new File(BootstrapApp.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile();
 		logger.debug("RootDir: {}", rootDir);
 
 		File data = new File(options.getData());
@@ -208,10 +163,29 @@ public class BootstrapApp {
 		tempDir.mkdirs();
 	}
 
+	private void checkForUpdate() throws Exception {
+		if (!options.getRepositoryUrl().toLowerCase().startsWith("http")) {
+			return;
+		}
+
+		window = new BootstrapWindow();
+		new WindowThread(window).start();
+
+		updateStrategy = new HTTPUpdateStrategy(options.getRepositoryUrl()); 
+		window.label.setText("Connecting to repository " + options.getRepositoryUrl());
+		logger.info("Looking for new Kipeto Jar at {}", updateStrategy.getUpdateUrl());
+		boolean updateFound = updateStrategy.isUpdateAvailable(jar);
+		
+		if (updateFound) update();
+		
+		window.setEnabled(false);
+		window.dispose();
+	}
+	
 	private void update() throws DateParseException, IOException {
 		window.setVisible(true);
 
-		HttpGet httpget = new HttpGet(updateUrl);
+		HttpGet httpget = new HttpGet();
 		HttpResponse contentResponse = client.execute(httpget);
 		HttpEntity entity = contentResponse.getEntity();
 
@@ -232,14 +206,13 @@ public class BootstrapApp {
 		}
 
 		File tempFile = File.createTempFile(getClass().getName(), ".jar", tempDir);
-		logger.debug("Downloading {} to {}", updateUrl, tempFile);
+		logger.debug("Downloading {} to {}", updateStrategy.getUpdateUrl(), tempFile);
 
 		CountingInputStream inputStream = new CountingInputStream(new BufferedInputStream(entity.getContent()));
-
 		inputStream.addByteTransferListener(new ProgressListener());
 
 		Streams.copyStream(inputStream, new FileOutputStream(tempFile), true);
-
+		
 		if (jar.exists()) {
 			logger.debug("Deleting {}", jar);
 			if (!jar.delete()) {
@@ -255,6 +228,7 @@ public class BootstrapApp {
 	}
 
 	private final class ProgressListener implements ByteTransferListener {
+		
 		public void handleByteTransfer(ByteTransferEvent event) {
 			window.progressBar.setMaximum((int) contentLength);
 			window.progressBar.setValue(((int) event.getBytesSinceBeginOfOperation()));
@@ -264,6 +238,7 @@ public class BootstrapApp {
 
 			window.label.setText(String.format("Downloading %s (%s von %s)", updateUrl, progress, total));
 		}
+		
 	}
 
 	private class WindowThread extends Thread {
