@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -88,7 +89,7 @@ public class BootstrapApp {
 
 	private FileAppender appender;
 
-	private HTTPUpdateStrategy updateStrategy;
+	private IUpdateStrategy updateStrategy;
 
 	public static void main(String[] args) throws Exception {
 		BootstrapApp bootstrapper = new BootstrapApp(args);
@@ -164,14 +165,19 @@ public class BootstrapApp {
 	}
 
 	private void checkForUpdate() throws Exception {
-		if (!options.getRepositoryUrl().toLowerCase().startsWith("http")) {
+		File localRepositoryFile = new File(options.getRepositoryUrl());
+		
+		if (options.getRepositoryUrl().toLowerCase().startsWith("http")) {
+			updateStrategy = new HttpUpdateStrategy(options.getRepositoryUrl()); 
+		} else if (localRepositoryFile.exists()) {
+			updateStrategy = new FileUpdateStrategy(options.getRepositoryUrl());
+		} else {
 			return;
 		}
-
+			
 		window = new BootstrapWindow();
 		new WindowThread(window).start();
 
-		updateStrategy = new HTTPUpdateStrategy(options.getRepositoryUrl()); 
 		window.label.setText("Connecting to repository " + options.getRepositoryUrl());
 		logger.info("Looking for new Kipeto Jar at {}", updateStrategy.getUpdateUrl());
 		boolean updateFound = updateStrategy.isUpdateAvailable(jar);
@@ -182,21 +188,8 @@ public class BootstrapApp {
 		window.dispose();
 	}
 	
-	private void update() throws DateParseException, IOException {
+	private void update() throws Exception {
 		window.setVisible(true);
-
-		HttpGet httpget = new HttpGet();
-		HttpResponse contentResponse = client.execute(httpget);
-		HttpEntity entity = contentResponse.getEntity();
-
-		Header lastModifiedHeader = contentResponse.getFirstHeader("Last-Modified");
-		Date lastModified = DateUtils.parseDate(lastModifiedHeader.getValue());
-
-		int statusCode = contentResponse.getStatusLine().getStatusCode();
-		logger.debug("HttpGet at {}, Status is {}", updateUrl, statusCode);
-		if (statusCode != HttpStatus.SC_OK) {
-			throw new RuntimeException(contentResponse.getStatusLine().toString());
-		}
 
 		File tempDir = new File(options.getData(), TEMP_DIR);
 		if (!tempDir.exists()) {
@@ -208,23 +201,22 @@ public class BootstrapApp {
 		File tempFile = File.createTempFile(getClass().getName(), ".jar", tempDir);
 		logger.debug("Downloading {} to {}", updateStrategy.getUpdateUrl(), tempFile);
 
-		CountingInputStream inputStream = new CountingInputStream(new BufferedInputStream(entity.getContent()));
-		inputStream.addByteTransferListener(new ProgressListener());
-
-		Streams.copyStream(inputStream, new FileOutputStream(tempFile), true);
+		//CountingInputStream inputStream = new CountingInputStream(new BufferedInputStream(entity.getContent()));
+		//inputStream.addByteTransferListener(new ProgressListener());
+		//FIXME: CountingOutputStream selber bauen oder Google Guava-Teil benutzen
+		
+		OutputStream destinationStream = new FileOutputStream(tempFile);
+		Date lastModified = updateStrategy.downloadUpdate(destinationStream);
 		
 		if (jar.exists()) {
 			logger.debug("Deleting {}", jar);
-			if (!jar.delete()) {
-				throw new RuntimeException("Could not delete <" + jar + ">");
-			}
+			if (!jar.delete()) throw new RuntimeException("Could not delete <" + jar + ">");
 		}
 
-		logger.debug("Moving {} to {}", tempFile, jar);
 		tempFile.setLastModified(lastModified.getTime());
-		if (!tempFile.renameTo(jar)) {
-			throw new RuntimeException("Could not rename <" + tempFile + "> to <" + jar + ">");
-		}
+		
+		logger.debug("Moving {} to {}", tempFile, jar);
+		if (!tempFile.renameTo(jar)) throw new RuntimeException("Could not rename <" + tempFile + "> to <" + jar + ">");
 	}
 
 	private final class ProgressListener implements ByteTransferListener {
@@ -236,7 +228,7 @@ public class BootstrapApp {
 			String progress = FileSizeFormatter.formateBytes(event.getBytesSinceBeginOfOperation(), 2);
 			String total = FileSizeFormatter.formateBytes(contentLength, 2);
 
-			window.label.setText(String.format("Downloading %s (%s von %s)", updateUrl, progress, total));
+			window.label.setText(String.format("Downloading %s (%s von %s)", updateStrategy.getUpdateUrl(), progress, total));
 		}
 		
 	}
