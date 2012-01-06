@@ -12,5 +12,7 @@ public interface IUpdateStrategy {
 
 	Date downloadUpdate(OutputStream destinationStream) throws Exception;
 
+	long getUpdateSize();
+
 	
 }

@@ -33,6 +33,10 @@ public class HttpUpdateStrategy implements IUpdateStrategy {
 		return jarUrl;
 	}
 	
+	public long getUpdateSize() {
+		return contentLength;
+	}
+	
 	public Date downloadUpdate(OutputStream destinationStream) throws Exception {
 		HttpGet httpget = new HttpGet();
 		HttpResponse contentResponse = client.execute(httpget);
