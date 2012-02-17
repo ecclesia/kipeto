@@ -39,8 +39,11 @@ public class Options extends BaseOptions {
 	protected boolean gui;
 
 	@Option(name = "-c", aliases = { "--call" }, usage = "Run after update")
-	protected String afterUpdate;
+	protected String call;
 
+	@Option(name = "-c+", aliases = { "--call-append"}, usage = "Will be appended to --call")
+	protected String callAppend;
+	
 	@Option(name = "-o", aliases = { "--suppressOfflineErrorMsg" }, usage = "Suppress Offline Error Message")
 	protected boolean suppressOfflineErrorMsg;
 	
@@ -90,8 +93,12 @@ public class Options extends BaseOptions {
 		return gui;
 	}
 
-	public String getAfterUpdate() {
-		return afterUpdate;
+	public String getCall() {
+		return call;
+	}
+	
+	public String getCallAppend() {
+		return callAppend;
 	}
 
 	public boolean useStaticRepository() {

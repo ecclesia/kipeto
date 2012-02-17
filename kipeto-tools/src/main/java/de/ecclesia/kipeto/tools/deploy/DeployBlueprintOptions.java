@@ -78,7 +78,7 @@ public class DeployBlueprintOptions extends BaseOptions {
 	@Override
 	protected void checkRequiredArguments() throws CmdLineException {
 		super.checkRequiredArguments();
-		checkRequiredArgument(DeployBlueprintOptions.class, "data");
+		checkRequiredArgument(DeployBlueprintOptions.class, "dataDir");
 		checkRequiredArgument(DeployBlueprintOptions.class, "blueprint");
 	}
 	

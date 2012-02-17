@@ -92,7 +92,7 @@ public class CreateBlueprintOptions extends BaseOptions {
 
 	@Override
 	protected void checkRequiredArguments() throws CmdLineException {
-		super.checkRequiredArguments();
+		//super.checkRequiredArguments(); Dieses Tool braucht kein Repository
 		checkRequiredArgument(CreateBlueprintOptions.class, "data");
 		checkRequiredArgument(CreateBlueprintOptions.class, "source");
 		checkRequiredArgument(CreateBlueprintOptions.class, "blueprint");
