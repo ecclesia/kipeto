@@ -158,7 +158,9 @@ public class KipetoApp {
 	}
 
 	private void launchTarget() throws IOException {
-		String command = options.getAfterUpdate();
+		String command = options.getCall();
+		
+		if (options.getCallAppend() != null) command += " " + options.getCallAppend();
 
 		if (command != null) {
 			logger.debug("Launching Target {}", command);

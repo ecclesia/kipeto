@@ -19,16 +19,17 @@
  */
 package de.ecclesia.kipeto.tools.meta;
 
+import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 
 import de.ecclesia.kipeto.common.util.BaseOptions;
 
 public class UpdateMetadataOptions extends BaseOptions {
 
-	@Option(name = "-b", aliases = { "--blueprint" }, required = true, usage = "Blueprint reference name", metaVar = "REF")
+	@Option(name = "-b", aliases = { "--blueprint" }, usage = "Blueprint reference name", metaVar = "REF")
 	private String blueprint;
 
-	@Option(name = "-t", aliases = { "--target" }, required = true, usage = "Local directory to adjust like 'C:/Programme/Anwendung'", metaVar = "DIR")
+	@Option(name = "-t", aliases = { "--target" }, usage = "Local directory to adjust like 'C:/Programme/Anwendung'", metaVar = "DIR")
 	private String target;
 
 	public UpdateMetadataOptions() {
@@ -52,6 +53,13 @@ public class UpdateMetadataOptions extends BaseOptions {
 
 	public void setTarget(String target) {
 		this.target = target;
+	}
+	
+	@Override
+	protected void checkRequiredArguments() throws CmdLineException {
+		super.checkRequiredArguments();
+		checkRequiredArgument(UpdateMetadataOptions.class, "blueprint");
+		checkRequiredArgument(UpdateMetadataOptions.class, "target");
 	}
 
 }

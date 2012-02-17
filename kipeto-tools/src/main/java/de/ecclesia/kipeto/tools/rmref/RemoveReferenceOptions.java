@@ -19,13 +19,14 @@
  */
 package de.ecclesia.kipeto.tools.rmref;
 
+import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 
 import de.ecclesia.kipeto.common.util.BaseOptions;
 
 public class RemoveReferenceOptions extends BaseOptions {
 
-	@Option(name = "-b", aliases = { "--reference" }, required = true, usage = "Reference to remove", metaVar = "VAR")
+	@Option(name = "-b", aliases = { "--reference" }, usage = "Reference to remove", metaVar = "VAR")
 	private String reference;
 
 	public RemoveReferenceOptions() {
@@ -41,6 +42,12 @@ public class RemoveReferenceOptions extends BaseOptions {
 
 	public void setReference(String reference) {
 		this.reference = reference;
+	}
+	
+	@Override
+	protected void checkRequiredArguments() throws CmdLineException {
+		super.checkRequiredArguments();
+		checkRequiredArgument(RemoveReferenceOptions.class, "reference");
 	}
 
 }
