@@ -19,16 +19,17 @@
  */
 package de.ecclesia.kipeto.tools.cpref;
 
+import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.Option;
 
 import de.ecclesia.kipeto.common.util.BaseOptions;
 
 public class CopyReferenceOptions extends BaseOptions {
 
-	@Option(name = "-s", aliases = { "--source" }, required = true, usage = "Reference to copy", metaVar = "VAR")
+	@Option(name = "-s", aliases = { "--source" }, usage = "Reference to copy", metaVar = "VAR")
 	private String source;
 
-	@Option(name = "-d", aliases = { "--destination" }, required = true, usage = "Reference to create", metaVar = "VAR")
+	@Option(name = "-d", aliases = { "--destination" }, usage = "Reference to create", metaVar = "VAR")
 	private String destination;
 
 	public CopyReferenceOptions() {
@@ -54,4 +55,11 @@ public class CopyReferenceOptions extends BaseOptions {
 		this.destination = destination;
 	}
 
+	@Override
+	protected void checkRequiredArguments() throws CmdLineException {
+		super.checkRequiredArguments();
+		checkRequiredArgument(CopyReferenceOptions.class, "source");
+		checkRequiredArgument(CopyReferenceOptions.class, "destination");
+	}
+	
 }
