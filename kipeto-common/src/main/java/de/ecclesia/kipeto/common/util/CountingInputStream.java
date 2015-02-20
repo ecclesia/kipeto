@@ -71,6 +71,12 @@ public class CountingInputStream extends FilterInputStream {
 		return this.count;
 	}
 
+	@Override
+	public void close() throws IOException {
+		updateCount(-1);
+		super.close();
+	}
+
 	private void updateCount(int read) {
 		if (read == -1) {
 			ByteTransferEvent event = new ByteTransferEvent(count, count - countAtLastEvent, threshold, true);
