@@ -42,15 +42,16 @@ public abstract class ReadingRepositoryStrategy {
 	protected static final String OBJECT_DIR = "objs";
 
 	protected static final String REFERENCE_DIR = "refs";
-	
+
 	private long bytesRead;
 
+	private long filesRead;
+
 	/**
-	 * Gibt die Anzahl von Stellen der Id an, welche zur Optimierung der
-	 * Dateisystemnutzung zur Bildung eines Unterordners genutzt werden sollen.
+	 * Gibt die Anzahl von Stellen der Id an, welche zur Optimierung der Dateisystemnutzung zur Bildung eines Unterordners genutzt werden
+	 * sollen.
 	 * 
-	 * Mit SUBDIR_POLICY = 2 wird ein Item mit der Id 'abcdefg' also im
-	 * Unterverzeichnis /ab/cdefg abgelegt.
+	 * Mit SUBDIR_POLICY = 2 wird ein Item mit der Id 'abcdefg' also im Unterverzeichnis /ab/cdefg abgelegt.
 	 * 
 	 */
 	protected static final int SUBDIR_POLICY = 2;
@@ -58,10 +59,11 @@ public abstract class ReadingRepositoryStrategy {
 	/**
 	 * Läd das Objekt mit der angegebenen Id aus dem Speicher.
 	 * 
-	 * @param id Id, unter der das gewünschte Objekt abgelegt wurde
+	 * @param id
+	 *            Id, unter der das gewünschte Objekt abgelegt wurde
 	 * @return InputStream des gespeichernten Objektes
-	 * @throws IdNotFoundException falls unter <code>id</code> kein Objekt
-	 *         abgelegt ist
+	 * @throws IdNotFoundException
+	 *             falls unter <code>id</code> kein Objekt abgelegt ist
 	 * @throws IOException
 	 */
 	public InputStream retrieveStream(final String id, ByteTransferListener listener) throws IOException {
@@ -82,16 +84,19 @@ public abstract class ReadingRepositoryStrategy {
 			countingInputStream.addByteTransferListener(listener);
 		}
 
+		filesRead++;
+
 		return countingInputStream;
 	}
 
 	/**
 	 * Läd das Objekt mit der angegebenen Id aus dem Speicher.
 	 * 
-	 * @param id Id, unter der das gewünschte Objekt abgelegt wurde
+	 * @param id
+	 *            Id, unter der das gewünschte Objekt abgelegt wurde
 	 * @return InputStream des gespeichernten Objektes
-	 * @throws IdNotFoundException falls unter <code>id</code> kein Objekt
-	 *         abgelegt ist
+	 * @throws IdNotFoundException
+	 *             falls unter <code>id</code> kein Objekt abgelegt ist
 	 * @throws IOException
 	 */
 	public InputStream retrieveStream(String id) throws IOException {
@@ -101,24 +106,24 @@ public abstract class ReadingRepositoryStrategy {
 	protected abstract InputStream retrieve(String id) throws IOException;
 
 	/**
-	 * Ermittelt die Größe eines Objektes im Speicher. Kann beispielsweise
-	 * genutzt werden um einen detaillierten Fortschrittsbalken anzuzeigen.
+	 * Ermittelt die Größe eines Objektes im Speicher. Kann beispielsweise genutzt werden um einen detaillierten Fortschrittsbalken
+	 * anzuzeigen.
 	 * 
-	 * @param id Id, unter der das gewünschte Objekt abgelegt wurde
+	 * @param id
+	 *            Id, unter der das gewünschte Objekt abgelegt wurde
 	 * @return Größe des Objektes in Byte
-	 * @throws IdNotFoundException falls unter <code>id</code> kein Objekt
-	 *         abgelegt ist
+	 * @throws IdNotFoundException
+	 *             falls unter <code>id</code> kein Objekt abgelegt ist
 	 * @throws IOException
 	 */
 	public abstract long sizeInRepository(String id) throws IOException;
 
 	/**
-	 * Liefert zu der übergebenen Referenz die referenzierte Id oder
-	 * <code>NULL</code>, falls die Referenz nicht existiert.
+	 * Liefert zu der übergebenen Referenz die referenzierte Id oder <code>NULL</code>, falls die Referenz nicht existiert.
 	 * 
-	 * @param reference Name, unter dem die Referenz angelegt wurde
-	 * @return Referenzierte Id oder <code>NULL</code>, falls die Referenz nicht
-	 *         existiert.
+	 * @param reference
+	 *            Name, unter dem die Referenz angelegt wurde
+	 * @return Referenzierte Id oder <code>NULL</code>, falls die Referenz nicht existiert.
 	 * @throws IOException
 	 */
 	public abstract String resolveReference(String reference) throws IOException;
@@ -133,13 +138,17 @@ public abstract class ReadingRepositoryStrategy {
 	public long bytesRead() {
 		return bytesRead;
 	}
-	
+
+	public long filesRead() {
+		return filesRead;
+	}
+
 	/**
 	 * Gibt ggf. belegte Ressourcen wieder frei.
 	 */
 	public abstract void close();
-	
+
 	public abstract List<Reference> allReferences() throws IOException;
-	
+
 	public abstract List<String> allObjects();
 }

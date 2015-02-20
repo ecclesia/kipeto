@@ -36,8 +36,7 @@ public class ReadingRepository {
 	private final ReadingRepositoryStrategy strategy;
 
 	/**
-	 * Erzeugt ein neues Repository, welches auf der übergebenen
-	 * Repository-Strategie arbeitet.
+	 * Erzeugt ein neues Repository, welches auf der übergebenen Repository-Strategie arbeitet.
 	 * 
 	 * @param repositoryStorage
 	 *            zu verwendende Repository-Strategie
@@ -49,9 +48,8 @@ public class ReadingRepository {
 	}
 
 	/**
-	 * Ermittelt die Größe eines Blobs im Repository (d.h. ggf. komprimiert).
-	 * Kann beispielsweise genutzt werden um einen detaillierten
-	 * Fortschrittsbalken anzuzeigen.
+	 * Ermittelt die Größe eines Blobs im Repository (d.h. ggf. komprimiert). Kann beispielsweise genutzt werden um einen detaillierten Fortschrittsbalken
+	 * anzuzeigen.
 	 * 
 	 * @param id
 	 *            Id, unter der das gewünschte Blob abgelegt wurde
@@ -65,13 +63,11 @@ public class ReadingRepository {
 	}
 
 	/**
-	 * Liefert zu der übergebenen Referenz die referenzierte Id oder
-	 * <code>NULL</code>, falls die Referenz nicht existiert.
+	 * Liefert zu der übergebenen Referenz die referenzierte Id oder <code>NULL</code>, falls die Referenz nicht existiert.
 	 * 
 	 * @param reference
 	 *            Name, unter dem die Referenz angelegt wurde
-	 * @return Referenzierte Id oder <code>NULL</code>, falls die Referenz nicht
-	 *         existiert.
+	 * @return Referenzierte Id oder <code>NULL</code>, falls die Referenz nicht existiert.
 	 * @throws IOException
 	 */
 	public String resolveReference(String reference) throws IOException {
@@ -109,9 +105,12 @@ public class ReadingRepository {
 		return strategy.bytesRead();
 	}
 
+	public long filesRead() {
+		return strategy.filesRead();
+	}
+
 	public void close() {
 		strategy.close();
 	}
-
 
 }
