@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.ecclesia.kipeto.common.util.Assert;
+import de.ecclesia.kipeto.common.util.FileSizeFormatter;
 import de.ecclesia.kipeto.common.util.HashUtil;
 import de.ecclesia.kipeto.common.util.Streams;
 import de.ecclesia.kipeto.compressor.Compressor;
@@ -141,8 +142,8 @@ public class Blob {
 		dataOutputStream.writeUTF(compression);
 		dataOutputStream.writeLong(contentLength);
 
-		// Nur der Content wird komprimiert
-		Compressor compressor = CompressorFactory.getCompressor(compression());
+		// Nur der Content wird komprimiertFileSizeFormatter
+		Compressor compressor = createCompressor(compression);
 		OutputStream compressingStream = compressor.compress(dataOutputStream);
 
 		Streams.copyStream(contentStream, compressingStream, true);
@@ -150,6 +151,10 @@ public class Blob {
 		byte[] hashBytes = digest.digest();
 
 		id = HashUtil.convertHashBytesToString(hashBytes);
+	}
+
+	protected Compressor createCompressor(String compression) {
+		return CompressorFactory.getCompressor(compression);
 	}
 
 	/**
@@ -182,8 +187,8 @@ public class Blob {
 			throw new IllegalStateException("Unsupported binary version <" + binaryVersion + ">");
 		}
 
-		logger.debug("retrieving item from Stream. type = " + type + " , compression = {}, content-length = {}",
-				compression, contentLength);
+		logger.debug(String.format("retrieving item from Stream. type = %s, compression = %s, content-length = %d (%s)",
+				type, compression, contentLength, FileSizeFormatter.formateBytes(contentLength, 1)));
 
 		Compressor compressor = CompressorFactory.getCompressor(compression);
 		InputStream contentStream = compressor.decompress(dataInputStream);
