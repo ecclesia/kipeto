@@ -4,19 +4,19 @@
   <name>Kipeto Tools</name>
   <groupId>de.ecclesia.kipeto</groupId>
   <artifactId>kipeto-tools</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
 
   <parent>
 	<groupId>de.ecclesia.kipeto</groupId>
 	<artifactId>kipeto-parent</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
   </parent>
   
   <dependencies>
 	<dependency>
 		<groupId>de.ecclesia.kipeto</groupId>
 		<artifactId>kipeto-core</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</dependency>
   </dependencies>
 

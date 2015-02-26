@@ -4,12 +4,12 @@
 	<name>Kipeto Common</name>
 	<groupId>de.ecclesia.kipeto</groupId>
 	<artifactId>kipeto-common</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<parent>
 		<groupId>de.ecclesia.kipeto</groupId>
 		<artifactId>kipeto-parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
