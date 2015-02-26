@@ -1,3 +1,5 @@
+release.properties
+target/
 */target/
 */.project
 */.classpath
