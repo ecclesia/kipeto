@@ -38,12 +38,13 @@ public class StrategySelector {
 
 	public static ReadingRepositoryStrategy getReadingStrategy(String url, AuthenticationProvider authenticationProvider) {
 		return getReadingStrategy(url, authenticationProvider, null);
-	}	
-	
-	
+	}
+
 	public static ReadingRepositoryStrategy getReadingStrategy(String url, AuthenticationProvider authenticationProvider, File tempDir) {
+		url = url.toLowerCase();
 		ReadingRepositoryStrategy repository;
-		if (url.toLowerCase().startsWith("http:")) {
+
+		if (url.startsWith("http:") || url.startsWith("https:")) {
 			repository = new HttpRepositoryStrategy(url);
 		} else if (url.toLowerCase().startsWith("ssh:")) {
 			repository = new SFTPRepositoryStrategy(url, authenticationProvider, tempDir);
