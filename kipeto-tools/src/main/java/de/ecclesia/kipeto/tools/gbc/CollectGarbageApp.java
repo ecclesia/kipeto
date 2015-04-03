@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
+import de.ecclesia.kipeto.common.util.FileSizeFormatter;
 import de.ecclesia.kipeto.common.util.LoggerConfigurer;
 import de.ecclesia.kipeto.common.util.Tuple.Tuple2;
 import de.ecclesia.kipeto.repository.AuthenticationProvider;
@@ -105,7 +106,7 @@ public class CollectGarbageApp {
 					bytes += tupel.get2();
 				}
 
-				logger.info("To remove objects, call with '--delete'");
+				logger.info("Would delete " + FileSizeFormatter.formateBytes(bytes, 2) + ". To actually delete objects, call with '--delete'");
 			}
 
 		} catch (Exception e) {

@@ -114,7 +114,7 @@ public class BootstrapApp {
 
 		ClassLoader bootstrapClassLoader = ClassLoader.getSystemClassLoader().getParent();
 
-		ClassLoader classLoader = new URLClassLoader(urls, bootstrapClassLoader);
+		URLClassLoader classLoader = new URLClassLoader(urls, bootstrapClassLoader);
 
 		Class<?> loadClass = classLoader.loadClass(KIPETO_CLASS);
 		Method method = loadClass.getMethod("main", new Class[] { String[].class });
@@ -122,6 +122,8 @@ public class BootstrapApp {
 		Logger.getRootLogger().removeAppender(appender);
 		method.invoke(null, new Object[] { args });
 		Logger.getRootLogger().addAppender(appender);
+
+		classLoader.close();
 	}
 
 	public BootstrapApp(String[] args) throws FileNotFoundException {
@@ -150,33 +152,33 @@ public class BootstrapApp {
 
 	private void checkForUpdate() throws Exception {
 		File localRepositoryFile = new File(options.getRepositoryUrl());
-		
+
 		if (options.getRepositoryUrl().toLowerCase().startsWith("http")) {
-			updateStrategy = new HttpUpdateStrategy(options.getRepositoryUrl()); 
+			updateStrategy = new HttpUpdateStrategy(options.getRepositoryUrl());
 		} else if (localRepositoryFile.exists()) {
 			updateStrategy = new FileUpdateStrategy(options.getRepositoryUrl());
 		} else {
 			return;
 		}
-			
+
 		window = new BootstrapWindow();
 		new WindowThread(window).start();
 
 		window.label.setText("Connecting to repository " + options.getRepositoryUrl());
 		logger.info("Looking for new Kipeto Jar at {}", updateStrategy.getUpdateUrl());
 		boolean updateFound = updateStrategy.isUpdateAvailable(jar);
-		
+
 		if (updateFound) {
 			logger.info("Update needed");
 			update();
 		} else {
 			logger.info("No Update needed");
 		}
-		
+
 		window.setEnabled(false);
 		window.dispose();
 	}
-	
+
 	private void update() throws Exception {
 		window.setVisible(true);
 
@@ -194,30 +196,30 @@ public class BootstrapApp {
 		destinationStream.addByteTransferListener(new ProgressListener());
 		updateLength = updateStrategy.getUpdateSize();
 		Date lastModified = updateStrategy.downloadUpdate(destinationStream);
-		
+
 		if (jar.exists()) {
 			logger.debug("Deleting {}", jar);
 			if (!jar.delete()) throw new RuntimeException("Could not delete <" + jar + ">");
 		}
 
 		tempFile.setLastModified(lastModified.getTime());
-		
+
 		logger.debug("Moving {} to {}", tempFile, jar);
 		if (!tempFile.renameTo(jar)) throw new RuntimeException("Could not rename <" + tempFile + "> to <" + jar + ">");
 	}
 
 	private final class ProgressListener implements ByteTransferListener {
-		
+
 		public void handleByteTransfer(ByteTransferEvent event) {
 			window.progressBar.setMaximum((int) updateLength);
 			window.progressBar.setValue(((int) event.getBytesSinceBeginOfOperation()));
-			
+
 			String progress = FileSizeFormatter.formateBytes(event.getBytesSinceBeginOfOperation(), 2);
 			String total = FileSizeFormatter.formateBytes(updateLength, 2);
 
 			window.label.setText(String.format("Downloading %s (%s von %s)", updateStrategy.getUpdateUrl(), progress, total));
 		}
-		
+
 	}
 
 	private class WindowThread extends Thread {

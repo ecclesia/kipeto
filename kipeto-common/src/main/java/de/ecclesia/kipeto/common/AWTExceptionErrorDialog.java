@@ -47,13 +47,13 @@ import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
 public class AWTExceptionErrorDialog extends JDialog implements ActionListener {
-	protected JList messageList;
+	protected JList<String> messageList;
 	protected JTextArea stackTraceView;
 
 	public AWTExceptionErrorDialog(Exception exception) {
 		this(null, exception);
 	}
-	
+
 	public AWTExceptionErrorDialog(Frame parent, Exception exception) {
 		super(parent, "Error");
 
@@ -81,7 +81,7 @@ public class AWTExceptionErrorDialog extends JDialog implements ActionListener {
 		// make list of nested exceptions
 		ArrayList<String> tempExceptionList = new ArrayList<String>();
 		addExceptionsToList(exception, tempExceptionList);
-		messageList = new JList(tempExceptionList.toArray());
+		messageList = new JList<String>(tempExceptionList.toArray(new String[tempExceptionList.size()]));
 		JScrollPane messageListScrollPane = new JScrollPane(messageList);
 		// put nice border around it
 		Border border = BorderFactory.createEtchedBorder(BevelBorder.LOWERED);

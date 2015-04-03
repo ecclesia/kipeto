@@ -49,6 +49,8 @@ public class BaseOptions {
 	@Option(name = "-pf", aliases = { "--parmFile" }, usage = "File which contains command line parameters")
 	protected File parameterFile;
 
+	private CmdLineParser parser;
+
 	public BaseOptions() {
 	}
 
@@ -95,7 +97,7 @@ public class BaseOptions {
 	protected void parse(String[] args) {
 		String[] preProcessedArgs = preProcessArguments(args);
 
-		CmdLineParser parser = new CmdLineParser(this);
+		parser = new CmdLineParser(this);
 
 		// if you have a wider console, you could increase the value;
 		// here 80 is also the default
@@ -152,7 +154,7 @@ public class BaseOptions {
 		String[] newArgs = parmList.toArray(new String[parmList.size()]);
 		return newArgs;
 	}
-	
+
 	protected void checkRequiredArguments() throws CmdLineException {
 		checkRequiredArgument(BaseOptions.class, "repositoryUrl");
 	}
@@ -166,7 +168,7 @@ public class BaseOptions {
 				Object value = field.get(this);
 				if (value != null) return;
 				String optionName = option.name();
-				throw new CmdLineException("Option must be set: " + optionName);
+				throw new CmdLineException(parser, "Option must be set: " + optionName);
 			} finally {
 				field.setAccessible(false);
 			}
