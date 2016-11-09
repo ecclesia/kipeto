@@ -194,7 +194,8 @@ public class Planner {
 				long tLh = file.length();
 
 				if (iLh != tLh) {
-					logger.debug(String.format("%s differs from blueprint. Length is %d, should be %d", file, tLh, iLh));
+					logger.debug(
+							String.format("%s differs from blueprint. Length is %d, should be %d", file, tLh, iLh));
 					addAction(new UpdateFileAction(file, item));
 				} else if (hashDiffers(item.itemId(), file)) {
 					logger.debug(String.format("%s differs from blueprint. Hash should be %s", file, item.itemId()));
@@ -288,18 +289,18 @@ public class Planner {
 	}
 
 	private void tryLock(File file) {
+		RandomAccessFile randomAccessFile = null;
 		FileChannel channel = null;
 		FileLock lock = null;
 
 		try {
-			channel = new RandomAccessFile(file, "rw").getChannel();
+			randomAccessFile = new RandomAccessFile(file, "rw");
+			channel = randomAccessFile.getChannel();
 			lock = channel.tryLock();
 
 			if (lock == null) {
-				logger.error("Lock for {} could not be acquired because another program holds an overlapping lock",
-						file);
-				throw new FileLockException(file,
-						"Lock could not be acquired because another program holds an overlapping lock");
+				logger.error("Lock for {} could not be acquired because another program holds an overlapping lock", file);
+				throw new FileLockException(file, "Lock could not be acquired because another program holds an overlapping lock");
 			} else {
 				logger.debug("Lock for {} could be acquired, no another program holds an overlapping lock", file);
 			}
@@ -308,10 +309,8 @@ public class Planner {
 			// bereits gelockt ist.
 		} catch (FileNotFoundException e) {
 			if (file.exists()) {
-				logger.error("Lock for {} could not be acquired because another program holds an overlapping lock",
-						file);
-				throw new FileLockException(file,
-						"Lock could not be acquired because another program holds an overlapping lock");
+				logger.error("Lock for {} could not be acquired because another program holds an overlapping lock", file);
+				throw new FileLockException(file, "Lock could not be acquired because another program holds an overlapping lock");
 			} else {
 				throw new RuntimeException(e);
 			}
@@ -319,13 +318,9 @@ public class Planner {
 			throw new RuntimeException(e);
 		} finally {
 			try {
-				if (lock != null) {
-					lock.release();
-				}
-
-				if (channel != null) {
-					channel.close();
-				}
+				if (lock != null) lock.release();
+				if (channel != null) channel.close();
+				if (randomAccessFile != null) randomAccessFile.close();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

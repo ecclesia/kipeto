@@ -25,22 +25,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,23 +48,13 @@ public class HttpRepositoryStrategy extends ReadingRepositoryStrategy {
 
 	private final Logger logger = LoggerFactory.getLogger(HttpRepositoryStrategy.class);
 
-	private final HttpClient client;
+	private final CloseableHttpClient client;
 	private final String repository;
 
 	public HttpRepositoryStrategy(String repository) {
 		this.repository = repository;
 
-		HttpParams httpParams = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(httpParams, (int) TimeUnit.SECONDS.toMillis(5));
-		HttpConnectionParams.setSoTimeout(httpParams, (int) TimeUnit.SECONDS.toMillis(10));
-		client = new DefaultHttpClient(httpParams);
-	}
-
-	public HttpRepositoryStrategy setProxy(String hostname, int port) {
-		HttpHost proxy = new HttpHost(hostname, port);
-		client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
-
-		return this;
+		client = HttpClients.createDefault();
 	}
 
 	@Override
@@ -85,14 +69,14 @@ public class HttpRepositoryStrategy extends ReadingRepositoryStrategy {
 
 		HttpGet httpget = new HttpGet(builder.toString());
 
-		HttpResponse response;
+		CloseableHttpResponse response;
 		try {
 			response = client.execute(httpget);
 		} catch (java.net.ConnectException e) {
 			throw new ConnectException(repository, builder.toString(), e);
 		} catch (UnknownHostException e) {
 			throw new ConnectException(repository, builder.toString(), e);
-		}catch (ConnectTimeoutException e) {
+		} catch (ConnectTimeoutException e) {
 			throw new ConnectException(repository, builder.toString(), e);
 		}
 
@@ -107,6 +91,7 @@ public class HttpRepositoryStrategy extends ReadingRepositoryStrategy {
 
 		String id = reader.readLine();
 
+		response.close();
 		reader.close();
 
 		return id;
@@ -119,7 +104,7 @@ public class HttpRepositoryStrategy extends ReadingRepositoryStrategy {
 		logger.debug("Retrieve Stream {} from {}", id, url);
 
 		HttpGet httpget = new HttpGet(url);
-		HttpResponse response = client.execute(httpget);
+		CloseableHttpResponse response = client.execute(httpget);
 		HttpEntity entity = response.getEntity();
 
 		int statusCode = response.getStatusLine().getStatusCode();
@@ -135,9 +120,11 @@ public class HttpRepositoryStrategy extends ReadingRepositoryStrategy {
 	@Override
 	public long sizeInRepository(String id) throws IOException {
 		HttpHead httpHead = new HttpHead(buildUrlForObject(id));
-		HttpResponse response = client.execute(httpHead);
+		CloseableHttpResponse response = client.execute(httpHead);
 
 		Header contentLength = response.getFirstHeader("Content-Length");
+		response.close();
+
 		return Long.parseLong(contentLength.getValue());
 	}
 
@@ -158,16 +145,22 @@ public class HttpRepositoryStrategy extends ReadingRepositoryStrategy {
 	@Override
 	public boolean contains(String id) throws IOException {
 		HttpHead httpHead = new HttpHead(buildUrlForObject(id));
-		HttpResponse response = client.execute(httpHead);
+		CloseableHttpResponse response = client.execute(httpHead);
 
 		int statusCode = response.getStatusLine().getStatusCode();
+
+		response.close();
 
 		return statusCode == HttpStatus.SC_OK;
 	}
 
 	@Override
 	public void close() {
-		// gibt nichts zu schliessen
+		try {
+			client.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -179,5 +172,4 @@ public class HttpRepositoryStrategy extends ReadingRepositoryStrategy {
 	public List<String> allObjects() {
 		throw new UnsupportedOperationException();
 	}
-
 }

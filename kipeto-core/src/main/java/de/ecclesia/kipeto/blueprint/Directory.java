@@ -31,7 +31,8 @@ import de.ecclesia.kipeto.compressor.Compressor;
 import de.ecclesia.kipeto.repository.Blob;
 
 /**
- * Repräsentation eines Verzeichnisses. Enthält Einträge in Form von FileItems und DirectoryItems.
+ * Repräsentation eines Verzeichnisses. Enthält Einträge in Form von FileItems
+ * und DirectoryItems.
  * 
  * @author Daniel Hintze
  * @since 25.01.2010
@@ -44,7 +45,8 @@ public class Directory extends Blob {
 	private final Item[] items;
 
 	/**
-	 * Konstruktor zum erzeugen von Directory`s, die aus dem Repository geladen werden.
+	 * Konstruktor zum erzeugen von Directory`s, die aus dem Repository geladen
+	 * werden.
 	 * 
 	 * @param id
 	 *            Id im Repository
@@ -73,6 +75,8 @@ public class Directory extends Blob {
 					items[i] = DirectoryItem.fromStream(dataInputStream);
 				} else {
 					contentStream.close();
+					dataInputStream.close();
+
 					throw new UnsupportedOperationException("Type '" + itemType + "' nicht bekannt");
 				}
 

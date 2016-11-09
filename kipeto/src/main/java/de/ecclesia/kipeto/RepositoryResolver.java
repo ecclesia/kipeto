@@ -31,18 +31,14 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,13 +137,10 @@ public class RepositoryResolver {
 		String configUrl = String.format("%s/%s/%s", defaultRepositoryUrl, DIST_DIR, RESOLVE_CONFIG_FILE);
 		log.info("Looking for repository-config at {}", configUrl);
 
-		HttpParams httpParams = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(httpParams, (int) TimeUnit.SECONDS.toMillis(3));
-		HttpConnectionParams.setSoTimeout(httpParams, (int) TimeUnit.SECONDS.toMillis(10));
-		HttpClient client = new DefaultHttpClient(httpParams);
+		CloseableHttpClient client = HttpClients.createDefault();
 
 		HttpGet httpget = new HttpGet(configUrl);
-		HttpResponse contentResponse;
+		CloseableHttpResponse contentResponse;
 		try {
 			contentResponse = client.execute(httpget);
 		} catch (ConnectTimeoutException e) {
@@ -173,6 +166,9 @@ public class RepositoryResolver {
 		Properties properties = new Properties();
 		properties.load(inputStream);
 
+		contentResponse.close();
+		client.close();
+
 		return properties;
 	}
 
@@ -194,7 +190,8 @@ public class RepositoryResolver {
 			}
 		}
 
-		log.warn("No matching config-entry found for {}, falling back to default-repository {}", localIp, defaultRepositoryUrl);
+		log.warn("No matching config-entry found for {}, falling back to default-repository {}", localIp,
+				defaultRepositoryUrl);
 
 		return defaultRepositoryUrl;
 	}

@@ -31,13 +31,15 @@ import java.util.Properties;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ParserProperties;
 
 public class BaseOptions {
 
 	@Option(name = "-l", aliases = { "--logLevel" }, usage = "Log Level")
 	protected String logLevel;
 
-	@Option(name = "-r", aliases = { "--repository" }, usage = "Remote-Repository URL like 'ssh://user@updates01.ecclesia:/srv/www/htdocs/repos", metaVar = "URL")
+	@Option(name = "-r", aliases = {
+			"--repository" }, usage = "Remote-Repository URL like 'ssh://user@updates01.ecclesia:/srv/www/htdocs/repos", metaVar = "URL")
 	protected String repositoryUrl;
 
 	@Option(name = "-p", aliases = { "--password" }, usage = "Password")
@@ -97,11 +99,11 @@ public class BaseOptions {
 	protected void parse(String[] args) {
 		String[] preProcessedArgs = preProcessArguments(args);
 
-		parser = new CmdLineParser(this);
+		ParserProperties parserProperties = ParserProperties
+				.defaults()
+				.withUsageWidth(130);
 
-		// if you have a wider console, you could increase the value;
-		// here 80 is also the default
-		parser.setUsageWidth(130);
+		parser = new CmdLineParser(this, parserProperties);
 
 		try {
 			// parse the arguments.
@@ -122,7 +124,7 @@ public class BaseOptions {
 			System.err.println();
 
 			// print option sample. This is useful some time
-			// System.err.println("  Example: java -jar " + jarName() + " " +
+			// System.err.println(" Example: java -jar " + jarName() + " " +
 			// parser.printExample(ALL));
 
 			System.exit(1);
@@ -130,7 +132,8 @@ public class BaseOptions {
 	}
 
 	public String[] getParameterFileArguments(File parameterFile) {
-		if (parameterFile == null) return new String[0];
+		if (parameterFile == null)
+			return new String[0];
 		try {
 			String[] parameterFileArguments = unsafeGetParameterFileArguments(parameterFile);
 			return preProcessArguments(parameterFileArguments);
@@ -149,7 +152,8 @@ public class BaseOptions {
 		for (String key : properties.stringPropertyNames()) {
 			parmList.add(key);
 			String property = properties.getProperty(key);
-			if (property != null && !property.isEmpty()) parmList.add(property);
+			if (property != null && !property.isEmpty())
+				parmList.add(property);
 		}
 		String[] newArgs = parmList.toArray(new String[parmList.size()]);
 		return newArgs;
@@ -159,16 +163,18 @@ public class BaseOptions {
 		checkRequiredArgument(BaseOptions.class, "repositoryUrl");
 	}
 
-	protected void checkRequiredArgument(Class<? extends BaseOptions> optionClass, String fieldName) throws CmdLineException {
+	protected void checkRequiredArgument(Class<? extends BaseOptions> optionClass, String fieldName)
+			throws CmdLineException {
 		try {
 			Field field = optionClass.getDeclaredField(fieldName);
 			try {
 				field.setAccessible(true);
 				Option option = field.getAnnotation(Option.class);
 				Object value = field.get(this);
-				if (value != null) return;
+				if (value != null)
+					return;
 				String optionName = option.name();
-				throw new CmdLineException(parser, "Option must be set: " + optionName);
+				throw new CmdLineException(parser, "Option must be set: " + optionName, null);
 			} finally {
 				field.setAccessible(false);
 			}

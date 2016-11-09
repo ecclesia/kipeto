@@ -6,12 +6,13 @@ import java.util.Date;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.DateUtils;
+import org.apache.http.client.utils.DateUtils;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,25 +22,25 @@ public class HttpUpdateStrategy implements IUpdateStrategy {
 
 	private static final Logger log = LoggerFactory.getLogger(HttpUpdateStrategy.class);
 	private String jarUrl;
-	private DefaultHttpClient client;
+	private CloseableHttpClient client;
 	private long contentLength;
 
 	public HttpUpdateStrategy(String repositoryUrl) {
 		jarUrl = String.format("%s/%s/%s", repositoryUrl, BootstrapApp.DIST_DIR, BootstrapApp.JAR_FILENAME);
-		client = new DefaultHttpClient();
+		client = HttpClients.createDefault();
 	}
-	
+
 	public String getUpdateUrl() {
 		return jarUrl;
 	}
-	
+
 	public long getUpdateSize() {
 		return contentLength;
 	}
-	
+
 	public Date downloadUpdate(OutputStream destinationStream) throws Exception {
 		HttpGet httpget = new HttpGet();
-		HttpResponse contentResponse = client.execute(httpget);
+		CloseableHttpResponse contentResponse = client.execute(httpget);
 		HttpEntity entity = contentResponse.getEntity();
 
 		Header lastModifiedHeader = contentResponse.getFirstHeader("Last-Modified");
@@ -50,14 +51,16 @@ public class HttpUpdateStrategy implements IUpdateStrategy {
 		if (statusCode != HttpStatus.SC_OK) {
 			throw new RuntimeException(contentResponse.getStatusLine().toString());
 		}
-		
+
 		Streams.copyStream(entity.getContent(), destinationStream, true);
+		contentResponse.close();
+
 		return lastModified;
-}
-	
+	}
+
 	public boolean isUpdateAvailable(File localJarFile) throws Exception {
 		HttpHead httpHead = new HttpHead(jarUrl);
-		HttpResponse headResponse = client.execute(httpHead);
+		CloseableHttpResponse headResponse = client.execute(httpHead);
 		int statusCode = headResponse.getStatusLine().getStatusCode();
 		log.debug("HttpHead at {}, Status is {}", jarUrl, statusCode);
 		if (statusCode != HttpStatus.SC_OK) {
@@ -75,7 +78,10 @@ public class HttpUpdateStrategy implements IUpdateStrategy {
 		log.debug("Local Kipeto Jar {} - Last-Modified: {}", localJarFile, new Date(localJarFile.lastModified()));
 		log.debug("Local Kipeto Jar {} - Content-Length: {}", localJarFile, localJarFile.length());
 
-		return (!localJarFile.exists() || lastModified.getTime() != localJarFile.lastModified() || contentLength != localJarFile.length());
+		headResponse.close();
+
+		return (!localJarFile.exists() || lastModified.getTime() != localJarFile.lastModified()
+				|| contentLength != localJarFile.length());
 	}
 
 }
