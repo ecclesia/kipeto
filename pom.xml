@@ -22,19 +22,19 @@
 		</license>
 	</licenses>
 	<organization>
-		<name>Ecclesia Versicherungsdienst GmbH</name>
+		<name>Ecclesia Holding GmbH</name>
 		<url>http://www.ecclesia-gruppe.de</url>
 	</organization>
 	<developers>
 		<developer>
 			<id>dmaehl</id>
 			<name>Dominik Maehl</name>
-			<email>dmaehl@ecclesia-gruppe.de</email>
+			<email>dominik.maehl@ecclesia-gruppe.de</email>
 		</developer>
 		<developer>
 			<id>dhintze</id>
 			<name>Daniel Hintze</name>
-			<email>dhintze@ecclesia-gruppe.de</email>
+			<email>daniel.hintze@ecclesia-gruppe.de</email>
 		</developer>
 	</developers>
 	<scm>
