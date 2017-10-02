@@ -3,7 +3,7 @@
 	<name>Kipeto Parent</name>
 	<groupId>de.ecclesia.kipeto</groupId>
 	<artifactId>kipeto-parent</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<packaging>pom</packaging>
 	<description>An agile software deployment system</description>
 	<url>http://github.com/ecclesia/kipeto</url>
@@ -41,7 +41,7 @@
 		<connection>scm:git:git@github.com:ecclesia/kipeto.git</connection>
 		<developerConnection>scm:git:git@github.com:ecclesia/kipeto.git</developerConnection>
 		<url>git@github.com:ecclesia/kipeto.git</url>
-	  <tag>HEAD</tag>
+	  <tag>kipeto-parent-1.0.2</tag>
   </scm>
 	<dependencies />
 	<properties>
