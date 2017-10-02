@@ -7,14 +7,14 @@
   <parent>
 	<groupId>de.ecclesia.kipeto</groupId>
 	<artifactId>kipeto-parent</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3-SNAPSHOT</version>
   </parent>
   
   <dependencies>
   	<dependency>
 	  <groupId>de.ecclesia.kipeto</groupId>
       <artifactId>kipeto-core</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3-SNAPSHOT</version>
 	</dependency>
   </dependencies>
 
